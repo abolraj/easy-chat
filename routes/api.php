@@ -1,10 +1,26 @@
 <?php
 
 use App\Events\UserTyping;
+use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\MessageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+// Authentication routes
+Route::controller(AuthenticationController::class)
+    ->name('auth.')
+    ->group(function(){
+    Route::post('register', 'register')
+        ->name('register');
+
+    Route::post('login', 'login')
+        ->name('login');
+
+    Route::post('logout', 'logout')
+        ->middleware('auth:sanctum')
+        ->name('logout');
+});
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
