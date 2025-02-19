@@ -17,7 +17,9 @@ return new class extends Migration
             $table->foreignId('conversation_id')->constrained()->cascadeOnDelete();
             $table->text('content');
             $table->text('attachments')->nullable();
-
+            $table->timestamp('edited_at')->nullable();
+            $table->softDeletes();
+            
             $table->timestamps();
         
             $table->index(['conversation_id', 'created_at']); // Optimized for message fetching
