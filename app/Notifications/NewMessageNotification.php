@@ -4,9 +4,8 @@ namespace App\Notifications;
 
 use App\Models\Message;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class NewMessageNotification extends Notification implements ShouldQueue
 {
@@ -22,9 +21,11 @@ class NewMessageNotification extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'message' => $this->message->content,
+            'message_id' => $this->message->id,
+            'content' => $this->message->content,
             'conversation_id' => $this->message->conversation_id,
-            'sender' => $this->message->user->name
+            'sender' => $this->message->user->name,
+            'sent_at' => $this->message->created_at
         ];
     }
 }
