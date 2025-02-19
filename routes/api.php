@@ -16,9 +16,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     
     // Messages
     Route::prefix('conversations/{conversation}')->group(function () {
-        Route::get('messages', [MessageController::class, 'index']);
-        Route::post('messages', [MessageController::class, 'store']);
-        Route::post('mark-read', [MessageController::class, 'markAsRead']);
+        Route::get('messages', [MessageController::class, 'index'])->name('conversations.messages.index');
+        Route::post('messages', [MessageController::class, 'store'])->name('conversations.messages.store');
+        Route::post('mark-read', [MessageController::class, 'markAsRead'])->name('conversations.messages.mark-as-read');
     });
 
     // Message Actions
@@ -32,5 +32,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $request->is_typing
         ));
         return response()->noContent();
-    });
+    })->name('conversations.typing');
 });
