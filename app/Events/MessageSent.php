@@ -17,21 +17,21 @@ class MessageSent implements ShouldBroadcast
 
     public function __construct(
         public Message $message,
-        public int $conversationId
     ) {}
 
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
-        return [
-            new PresenceChannel("chat.conversation.{$this->conversationId}"),
-        ];
+        return new PresenceChannel("chat.{$this->message->conversation_id}");
     }
 
-    public function broadcastWith(): array
+    public function broadcastWith()
     {
         return [
-            'message' => $this->message->load('user'),
-            'conversation_id' => $this->conversationId
+            'id' => $this->message->id,
+            'content' => $this->message->content,
+            'user' => $this->message->user,
+            'created_at' => $this->message->created_at,
+            'attachments' => $this->message->attachments
         ];
     }
 }
