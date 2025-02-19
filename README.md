@@ -2118,3 +2118,217 @@ To complete setup:
 5. Configure file storage for attachments
 
 Let me know if you need any clarification or additional components!
+
+## Frontend 2
+
+The CSRF token mismatch error occurs because the CSRF token isn't being properly handled between the React frontend and Laravel backend. Let's fix this step by step:
+
+---
+
+### **1. Configure Sanctum for API Authentication**
+Sanctum requires proper CORS and CSRF configuration. Update your `.env` file:
+
+```env
+SESSION_DOMAIN=localhost
+SANCTUM_STATEFUL_DOMAINS=localhost:3000
+```
+
+---
+
+### **2. Update CORS Configuration**
+Edit `config/cors.php`:
+
+```php
+return [
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'login', 'register'],
+    'allowed_methods' => ['*'],
+    'allowed_origins' => ['*'],
+    'allowed_headers' => ['*'],
+    'exposed_headers' => [],
+    'max_age' => 0,
+    'supports_credentials' => true,
+];
+```
+
+---
+
+### **3. Update Laravel Breeze API Routes**
+Ensure your `routes/api.php` includes the Breeze routes:
+
+```php
+Route::prefix('auth')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+});
+```
+
+---
+
+### **4. Add CSRF Token to React Frontend**
+In your React app, create a utility to fetch the CSRF token before making authenticated requests:
+
+**`src/api/csrf.js`**
+```javascript
+import axios from 'axios';
+
+export const fetchCsrfToken = async () => {
+  await axios.get('/sanctum/csrf-cookie', {
+    baseURL: process.env.REACT_APP_API_URL,
+    withCredentials: true,
+  });
+};
+```
+
+---
+
+### **5. Update Login Functionality**
+Modify your login function to fetch the CSRF token before making the login request:
+
+**`src/api/auth.js`**
+```javascript
+import axios from 'axios';
+import { fetchCsrfToken } from './csrf';
+
+export const login = async (credentials) => {
+  await fetchCsrfToken();
+  
+  const response = await axios.post('/auth/login', credentials, {
+    baseURL: process.env.REACT_APP_API_URL,
+    withCredentials: true,
+  });
+
+  return response.data;
+};
+```
+
+---
+
+### **6. Configure Axios Defaults**
+Set up Axios to include credentials and the base URL globally:
+
+**`src/api/config.js`**
+```javascript
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_URL,
+  withCredentials: true,
+});
+
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export default api;
+```
+
+---
+
+### **7. Update React Login Component**
+Use the `login` function in your login component:
+
+**`src/pages/LoginPage.jsx`**
+```javascript
+import { useState } from 'react';
+import { login } from '../api/auth';
+
+export default function LoginPage() {
+  const [credentials, setCredentials] = useState({
+    email: '',
+    password: '',
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const user = await login(credentials);
+      console.log('Logged in:', user);
+      // Redirect or update state
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="email"
+        value={credentials.email}
+        onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+      />
+      <input
+        type="password"
+        value={credentials.password}
+        onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+      />
+      <button type="submit">Login</button>
+    </form>
+  );
+}
+```
+
+---
+
+### **8. Verify Sanctum Middleware**
+Ensure Sanctum middleware is applied to your API routes in `app/Http/Kernel.php`:
+
+```php
+'api' => [
+    \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+    'throttle:api',
+    \Illuminate\Routing\Middleware\SubstituteBindings::class,
+],
+```
+
+---
+
+### **9. Test the Login Flow**
+1. Start your Laravel backend:
+   ```bash
+   php artisan serve
+   ```
+
+2. Start your React frontend:
+   ```bash
+   cd client
+   npm run dev
+   ```
+
+3. Open your browser and navigate to the login page.
+
+4. Submit the login form. The flow should be:
+   - Fetch CSRF token from `/sanctum/csrf-cookie`
+   - Send login request to `/auth/login`
+   - Receive authentication token and store it
+
+---
+
+### **10. Debugging Tips**
+If you still encounter issues:
+1. Check the browser's Network tab to ensure:
+   - The `/sanctum/csrf-cookie` request is successful.
+   - The `XSRF-TOKEN` cookie is set.
+   - The login request includes the `X-XSRF-TOKEN` header.
+
+2. Verify your `.env` file:
+   ```env
+   SESSION_DRIVER=cookie
+   SESSION_DOMAIN=localhost
+   SANCTUM_STATEFUL_DOMAINS=localhost:3000
+   ```
+
+3. Clear Laravel cache:
+   ```bash
+   php artisan cache:clear
+   php artisan config:clear
+   php artisan route:clear
+   ```
+
+---
+
+This setup ensures proper CSRF token handling for API authentication. Let me know if you encounter any further issues! 🚀
