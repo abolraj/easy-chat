@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -21,17 +22,11 @@ class MessageSent implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new PresenceChannel("chat.{$this->message->conversation_id}");
+        return new PresenceChannel("chat.conversation.{$this->message->conversation_id}");
     }
 
     public function broadcastWith()
     {
-        return [
-            'id' => $this->message->id,
-            'content' => $this->message->content,
-            'user' => $this->message->user,
-            'created_at' => $this->message->created_at,
-            'attachments' => $this->message->attachments
-        ];
+        return $this->message->load('user')->toArray();
     }
 }
