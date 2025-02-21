@@ -105,3 +105,7 @@ export function apiDelete(endpoint, initialData = null) {
 
   return { data, loading, error, apiRefresh}
 }
+
+export function hasApiKey(){
+  return localStorage.getItem('auth_token') && localStorage.getItem('auth_type')
+}
