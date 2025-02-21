@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import useApi from '../hooks/useApi'
+import { apiGet } from '../hooks/useApi'
 import { echo } from '../api/websocket'
 import api from '../api/config'
 
@@ -12,19 +12,23 @@ export const ChatProvider = ({ children }) => {
   const [typingUsers, setTypingUsers] = useState([])
   const [onlineUsers, setOnlineUsers] = useState([])
   
-  const { data: conversation, refresh } = useApi(
-    conversationId ? `/api/conversations/${conversationId}` : null
-  )
+  const { data, apiRefresh } = apiGet(`/api/conversations/${conversationId ?? 1}`)
 
   // WebSocket Handlers
   useEffect(() => {
     if (!conversationId) return
+    apiRefresh()
+  }, [conversationId])
 
+  useEffect(()=>{
+    console.log('api data changed:', data)
+    if(data?.messages)
+      setMessages(data.messages)
     const channel = echo.join(`chat.conversation.${conversationId}`)
       .here(users => setOnlineUsers(users))
       .joining(user => setOnlineUsers(prev => [...prev, user]))
       .leaving(user => setOnlineUsers(prev => prev.filter(u => u.id !== user.id)))
-      .listen('MessageSent', message => setMessages(prev => [message, ...prev]))
+      .listen('MessageSent', message => {console.log('Mesage Sent event;');setMessages(prev => [message, ...prev])})
       .listen('MessageUpdated', message => 
         setMessages(prev => prev.map(m => m.id === message.id ? message : m))
       )
@@ -38,22 +42,21 @@ export const ChatProvider = ({ children }) => {
         )
       })
 
-    return () => channel.leave()
-  }, [conversationId])
+    // return () => channel.unsubscribe()
+  },[data])
 
   const value = {
-    conversation,
+    conversation: data,
     messages,
     typingUsers,
     onlineUsers,
-    refreshConversation: refresh,
     sendMessage: async (content, files) => {
       const formData = new FormData()
       formData.append('content', content)
       Array.from(files).forEach(file => formData.append('attachments[]', file))
       
       const response = await api.post(
-        `/conversations/${conversationId}/messages`,
+        `/api/conversations/${conversationId}/messages`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       )

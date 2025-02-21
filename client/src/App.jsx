@@ -7,6 +7,7 @@ import LoginPage from './pages/Auth/LoginPage'
 import RegisterPage from './pages/Auth/RegisterPage'
 import ChatHome from './pages/Chat/ChatHome'
 import ConversationPage from './pages/Chat/ConversationPage'
+import { ChatProvider } from './contexts/ChatContext'
 
 export default function App() {
   return (
@@ -14,7 +15,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          
+
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
@@ -22,7 +23,11 @@ export default function App() {
 
           <Route element={<MainLayout />}>
             <Route path="/chat" element={<ChatHome />} />
-            <Route path="/chat/:conversationId" element={<ConversationPage />} />
+            <Route path="/chat/:conversationId" element={
+              <ChatProvider>
+                <ConversationPage />
+              </ChatProvider>
+            } />
           </Route>
         </Routes>
       </BrowserRouter>

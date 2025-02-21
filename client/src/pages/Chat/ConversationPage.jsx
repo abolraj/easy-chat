@@ -3,10 +3,18 @@ import { useChat } from '../../contexts/ChatContext'
 import MessageInput from '../../components/chat/MessageInput'
 import MessageBubble from '../../components/chat/MessageBubble'
 import TypingIndicator from '../../components/chat/TypingIndicator'
+import { useEffect } from 'react'
+import { useAuth } from '../../contexts/AuthContext'
 
 export default function ConversationPage() {
   const { conversationId } = useParams()
-  const { messages, typingUsers } = useChat()
+  const { messages, conversation, typingUsers, apiRefresh } = useChat()
+  const { user:currentUser } = useAuth()
+
+  useEffect(()=>{
+    console.log('conversation', conversation)
+
+  },[conversation])
 
   return (
     <div className="flex flex-col h-full">
