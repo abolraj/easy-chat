@@ -11,11 +11,6 @@ export default function ConversationPage() {
   const { messages, conversation, typingUsers, apiRefresh } = useChat()
   const { user:currentUser } = useAuth()
 
-  useEffect(()=>{
-    console.log('conversation', conversation)
-
-  },[conversation])
-
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
