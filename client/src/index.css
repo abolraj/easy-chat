@@ -1,2 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Lalezar&family=Quicksand:wght@500&display=swap');
 @import "tailwindcss";
 @source "../components";
+@plugin "daisyui";
+
+* {
+    font-family: "Quicksand", cursive, 'Courier New', Courier, monospace;
+    font-optical-sizing: auto;
+}
