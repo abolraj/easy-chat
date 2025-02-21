@@ -11,7 +11,7 @@ export default function MainLayout() {
   return (
     <div className="min-h-screen bg-base-200">
       <Navbar user={user} />
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto">
         <Outlet />
       </div>
     </div>
