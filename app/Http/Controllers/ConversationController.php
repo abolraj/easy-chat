@@ -4,14 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Conversation;
 use App\Http\Requests\StoreConversationRequest;
+use Illuminate\Http\Request;
 
 class ConversationController extends Controller
 {
     public function index()
     {
         return auth()->user()->conversations()
-            ->with(['participants', 'lastMessage'])
-            ->paginate();
+            ->with(['participants', 'messages'])
+            ->get();
+    }
+
+    public function show(Request $request, $conversation)
+    {
+        $conversation = Conversation::where('id', $conversation)
+            ->with(['messages', 'messages.user'])
+            ->first();
+        return response()->json($conversation);
     }
 
     public function store(StoreConversationRequest $request)
