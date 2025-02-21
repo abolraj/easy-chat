@@ -28,7 +28,16 @@ export const ChatProvider = ({ children }) => {
       .here(users => setOnlineUsers(users))
       .joining(user => setOnlineUsers(prev => [...prev, user]))
       .leaving(user => setOnlineUsers(prev => prev.filter(u => u.id !== user.id)))
-      .listen('MessageSent', message => {console.log('Mesage Sent event;');setMessages(prev => [message, ...prev])})
+      .listen('MessageSent', newMessage => {
+        console.log('Message Sent:')
+        setMessages((prevMessages)=>{
+          if(!prevMessages.some((msg)=>msg.id === newMessage.id)){
+            const updatedMessages = [newMessage, ...prevMessages]
+            return updatedMessages
+          }
+          return prevMessages
+        })
+      })
       .listen('MessageUpdated', message => 
         setMessages(prev => prev.map(m => m.id === message.id ? message : m))
       )
@@ -55,11 +64,13 @@ export const ChatProvider = ({ children }) => {
       formData.append('content', content)
       Array.from(files).forEach(file => formData.append('attachments[]', file))
       
+      console.log('sent request to new message '+`/api/conversations/${conversationId}/messages`)
       const response = await api.post(
         `/api/conversations/${conversationId}/messages`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       )
+      console.log('received the response:' + `/api/conversations/${conversationId}/messages`, response)
       return response.data
     }
   }
