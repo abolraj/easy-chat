@@ -24,10 +24,18 @@ class MessageController extends Controller
 
     public function store(StoreMessageRequest $request, Conversation $conversation)
     {
+
+        $attachments = [];
+        if($request->hasFile('attachments'))
+            foreach($request->file('attachments') as $file){
+                $filePath = '/storage/' . $file->storePublicly('images');
+                $attachments[] = url($filePath);
+            }
+
         $message = $conversation->messages()->create([
             'user_id' => $request->user()->id,
             'content' => $request->content,
-            'attachments' => $request->attachments
+            'attachments' => $attachments,
         ]);
 
         broadcast(new MessageSent($message))->toOthers();
