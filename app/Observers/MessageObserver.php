@@ -11,6 +11,8 @@ class MessageObserver
     {
         $message->conversation->participants
             ->filter(fn($p) => $p->user_id !== $message->user_id)
-            ->each->user->notify(new NewMessageNotification($message));
+            ->each(function ($participant) use ($message) {
+                $participant->user->notify(new NewMessageNotification($message));
+            });
     }
 }
