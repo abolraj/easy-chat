@@ -1,14 +1,13 @@
 import { XMarkIcon } from '@heroicons/react/24/solid'
 
 export default function FilePreview({ file, onRemove }) {
-  const isImage = file.type.startsWith('image/')
 
   return (
     <div className="relative group mt-2">
       {isImage ? (
         <img
-          src={URL.createObjectURL(file)}
-          alt={file.name}
+          src={file}
+          alt={file}
           className="rounded-lg max-h-48 object-cover"
         />
       ) : (
