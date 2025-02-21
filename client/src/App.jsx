@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { AuthProvider } from './contexts/AuthContext'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
 import MainLayout from './components/layout/MainLayout'
 import AuthLayout from './components/layout/AuthLayout'
 import HomePage from './pages/HomePage'
@@ -10,17 +10,19 @@ import ConversationPage from './pages/Chat/ConversationPage'
 import { ChatProvider } from './contexts/ChatContext'
 
 export default function App() {
+  const { user, loading } = useAuth()
+
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
 
+        {!user ?
           <Route element={<AuthLayout />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
+            <Route path="/register" element={user ? <Navigate to="/" /> : <RegisterPage />} />
           </Route>
-
+          :
           <Route element={<MainLayout />}>
             <Route path="/chat" element={<ChatHome />} />
             <Route path="/chat/:conversationId" element={
@@ -29,8 +31,10 @@ export default function App() {
               </ChatProvider>
             } />
           </Route>
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+        }
+
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
