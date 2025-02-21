@@ -9,7 +9,7 @@ export default function UserAvatar({ user, size = 'md' }) {
 
   return (
     <div className={`avatar placeholder ${sizes[size]}`}>
-      {user.avatar ? (
+      {user?.avatar ? (
         <img 
           src={user.avatar} 
           alt={user.name} 
@@ -17,7 +17,7 @@ export default function UserAvatar({ user, size = 'md' }) {
         />
       ) : (
         <div className="bg-neutral text-neutral-content rounded-full">
-          <UserCircleIcon className="h-3/4 w-3/4" />
+          <UserCircleIcon className="" />
         </div>
       )}
     </div>
