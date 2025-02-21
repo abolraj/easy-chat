@@ -12,13 +12,19 @@ export default function MessageBubble({ message, isOwn }) {
           <img src={message.user.avatar} alt={message.user.name} />
         </div>
       </div>
-      
+
       <div className={`chat-bubble ${isOwn ? 'chat-bubble-primary' : ''}`}>
         {message.content}
-        
-        {message.attachments?.map((file, index) => (
-          <FilePreview key={index} file={file} />
-        ))}
+
+        {message?.attachments &&
+          <div className="files flex flex-wrap gap-2">
+            <hr className="w-full"/>
+            {message.attachments?.map((url, index) => (
+              <FilePreview key={index} url={url} />
+            ))}
+          </div>
+        }
+
 
         {message.edited_at && (
           <span className="text-xs opacity-50 flex items-center gap-1 ml-2">
@@ -27,7 +33,7 @@ export default function MessageBubble({ message, isOwn }) {
           </span>
         )}
       </div>
-      
+
       <div className="chat-footer opacity-50 text-xs mt-1">
         {new Date(message.created_at).toLocaleTimeString()}
         {isOwn && (
