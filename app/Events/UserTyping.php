@@ -22,7 +22,7 @@ class UserTyping
 
     public function broadcastOn()
     {
-        return new PresenceChannel("chat.{$this->conversationId}");
+        return new PresenceChannel("chat.conversation.{$this->conversationId}");
     }
 
 }
