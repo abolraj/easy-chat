@@ -13,14 +13,14 @@ export const AuthProvider = ({ children }) => {
         authUser()
       } catch (error) {
         setUser(null)
+        setLoading(false)
       }
-      setLoading(false)
     }
     initAuth()
   }, [])
 
   const authUser = async () => {
-    const userData = await fetchUser()
+    const userData = await fetchUser().finally(()=>setLoading(false))
     setUser(userData)
     return userData
   }
@@ -48,6 +48,11 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+      {loading && 
+      <div className="fixed bg-base-100 z-50 left-0 top-0 w-screen h-screen flex flex-col items-center justify-center">
+        <span className="loading loading-infinity text-info w-20"></span>
+      </div>
+      }
       {children}
     </AuthContext.Provider>
   )
