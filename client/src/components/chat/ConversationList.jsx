@@ -20,7 +20,9 @@ export default function ConversationList() {
             <div className="flex-1">
               <h3 className="font-semibold">{convo.name}</h3>
               <p className="text-sm text-gray-400">
-                {convo.messages[0].content}
+                {!convo.messages[0] ? 
+                  <span className="opacity-50">No Messages !</span>
+                : convo.messages[0].content}
               </p>
             </div>
           </Link>
