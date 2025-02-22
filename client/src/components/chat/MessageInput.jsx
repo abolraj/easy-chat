@@ -30,7 +30,7 @@ export default function MessageInput() {
   }, [input, isTyping])
 
   return (
-    <div className="p-4 bg-base-300 border-t border-base-100">
+    <div className="fixed bottom-0 left-0 w-full rounded-t-3xl p-4 bg-base-300 border-t border-base-100">
       {files.length > 0 && (
         <div className="flex gap-2 mb-2 flex-wrap">
           {files.map((file, index) => (
@@ -53,7 +53,9 @@ export default function MessageInput() {
         />
 
         <div className="join grow flex h-7">
-          <PaperClipIcon className="h-full join-item me-3" />
+          <label htmlFor="file-upload">
+            <PaperClipIcon className="h-full join-item me-3" />
+          </label>
           <input
             value={input}
             onChange={(e) => {
