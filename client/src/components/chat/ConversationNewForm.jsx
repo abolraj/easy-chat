@@ -1,58 +1,121 @@
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { AtSymbolIcon, KeyIcon } from '@heroicons/react/24/solid'
-import { Link } from 'react-router-dom'
+import SearchableSelect from '../ui/SearchableSelect'
+import { apiGet, apiPost } from '../../hooks/useApi'
 
 export default function ConversationNewForm() {
-  const [credentials, setCredentials] = useState({ email: '', password: '' })
-  const { login, loading } = useAuth()
-  const [errorMsg, setErrorMsg] = useState('')
+  const [data, setData] = useState({
+    type: '',
+    name: '',
+    users: null,
+  })
 
+  const [errorMsg, setErrorMsg] = useState('')
+  const [apiAbort, setApiAbort] = useState(new AbortController())
+
+  const [apiData, setApiData] = useState({
+    params: {
+      q: null,
+    },
+    signal: apiAbort.signal,
+  })
+  const { data: users, loading: loadingUsers } = apiGet('/api/users', apiData)
+  const { data: conversation, loading, apiRefresh } = apiPost('/api/conversations', data, false)
+  
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      console.log(await login(credentials))
-      console.log('Logined Successfully !')
+      apiRefresh()
+      console.log('Created Successfully !')
     } catch (error) {
       console.error('Login failed:', error);
       setErrorMsg(error.response.data.message);
     }
   }
 
+  const onSearchUser = (filter) => {
+    if (filter != apiData.params.q) {
+      let newAborter = apiAbort
+      if (loadingUsers) {
+        apiAbort.abort()
+        newAborter = new AbortController()
+        setApiAbort(newAborter)
+      }
+      setApiData(prev => {
+        const newData = {
+          params: {
+            q: filter,
+          },
+          signal: newAborter.signal,
+        }
+
+        // apiRefresh()
+        return newData
+      })
+    }
+  }
+
   return (
-    <>
-      <h2 className="text-3xl border-b border-b-accent">Make new Conversation</h2>
-      <form onSubmit={handleSubmit} className="space-y-2">
-        <label className="input validator w-full pl-1" htmlFor="name">
+    <div className="flex flex-col h-full">
+      <h2 className="text-3xl mb-2 border-b border-b-accent">Make new Conversation</h2>
+      <form onSubmit={handleSubmit} className="space-y-2 grow">
+        <label className="input validator w-full pl-1" htmlFor="type">
           <AtSymbolIcon height={"90%"} />
 
           <input
             type="text"
             className="w-full"
-            id="email"
-            placeholder="Mail@gmail.com"
-            value={credentials.email}
-            onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+            id="name"
+            placeholder="Give your conversation name"
+            value={data.name}
+            onChange={(e) => setData({ ...data, name: e.target.value })}
             required
           />
         </label>
-        <div class="validator-hint hidden">Enter valid email address</div>
+        <div class="validator-hint hidden">Enter valid name</div>
 
-        <label className="input validator w-full pl-1" htmlFor="password">
-          <KeyIcon height={"90%"} />
+        <div className="validator pl-1" htmlFor="type">
+          <label htmlFor="type_group">
+            <span className="mx-2 label"> Group </span>
+            <input
+              type="radio"
+              className="radio radio-primary"
+              name="type"
+              id="type_group"
+              value="group"
+              onChange={(e) => setData({ ...data, type: e.target.value })}
+              required
+            />
+          </label>
 
-          <input
-            type="password"
+          <label htmlFor="type_private">
+            <span className="mx-2 label"> / Or Private</span>
+            <input
+              type="radio"
+              className="radio radio-primary"
+              name="type"
+              id="type_private"
+              value="private"
+              onChange={(e) => setData({ ...data, type: e.target.value })}
+              required
+            />
+          </label>
+        </div>
+        <div class="validator-hint hidden">Enter valid type</div>
+
+        <label className="input w-full">
+          <span className="label !me-0">Participants </span>
+          <SearchableSelect
+            inputName='users'
+            options={users}
+            onSearch={(q) => onSearchUser(q)}
+            onChange={(users) => setData({ ...data, users: [users.id] })}
+            loading={loadingUsers}
+            getShowInfo={(user) =>{ return {title: user.name, value: user.id} } }
             className="w-full"
-            id="password"
-            placeholder="12@#$678"
-            min={8}
-            value={credentials.password}
-            onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-            required
           />
         </label>
-        <div class="validator-hint hidden">Enter valid password</div>
 
         {errorMsg && <div className="text-error">{errorMsg}</div>}
 
@@ -64,16 +127,10 @@ export default function ConversationNewForm() {
           {loading ?
             <spin class="loading loading-infinity loading-xl text-primary"></spin>
             :
-            'Login'
+            'Make'
           }
         </button>
       </form>
-
-      <div className="text-center mt-4">
-        <Link to="/register" className="link link-primary text-sm">
-          Already not registered ? Signup
-        </Link>
-      </div>
-    </>
+    </div>
   )
 }
