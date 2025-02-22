@@ -12,7 +12,7 @@ class ConversationFactory extends Factory
     {
         return [
             'type' => 'private',
-            'name' => null,
+            'name' => fake()->words(3, true),
         ];
     }
 

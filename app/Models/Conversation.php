@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Conversation extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['name', 'type'];
     protected $casts = ['type' => 'string'];
 
     public function participants()
@@ -17,6 +19,6 @@ class Conversation extends Model
 
     public function messages()
     {
-        return $this->hasMany(Message::class)->latest();
+        return $this->hasMany(Message::class)->oldest();
     }
 }

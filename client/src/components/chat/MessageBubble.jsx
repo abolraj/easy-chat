@@ -9,14 +9,14 @@ export default function MessageBubble({ message, isOwn }) {
     <div className={`chat ${isOwn ? 'chat-end' : 'chat-start'}`}>
       <div className="chat-image avatar">
         <div className="w-10 rounded-full bg-neutral">
-          <img src={message.user.avatar} alt={message.user.name} />
+          <img src={"https://ui-avatars.com/api/?background=151515&color=fff&name="+message.user.name} alt={message.user.name} />
         </div>
       </div>
 
       <div className={`chat-bubble ${isOwn ? 'chat-bubble-primary' : ''}`}>
         {message.content}
 
-        {message?.attachments &&
+        {message?.attachments[0] &&
           <div className="files flex flex-wrap gap-2">
             <hr className="w-full"/>
             {message.attachments?.map((url, index) => (

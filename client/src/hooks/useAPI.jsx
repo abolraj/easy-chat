@@ -20,12 +20,12 @@ export function apiGet(endpoint, initialData = null) {
 
   const apiRefresh = () => request()
 
-  useEffect(()=>{
+  useEffect(() => {
     apiRefresh()
-  },[endpoint, initialData])
+  }, [endpoint, initialData])
 
   // return { data, loading, error, apiRefresh, apiSucceed, apiFailed}
-  return { data, loading, error, apiRefresh}
+  return { data, loading, error, apiRefresh }
 }
 
 export function apiPut(endpoint, initialData = null) {
@@ -47,16 +47,16 @@ export function apiPut(endpoint, initialData = null) {
 
   const apiRefresh = () => request()
 
-  useEffect(()=>{
+  useEffect(() => {
     apiRefresh()
-  },[endpoint, initialData])
+  }, [endpoint, initialData])
 
-  return { data, loading, error, apiRefresh}
+  return { data, loading, error, apiRefresh }
 }
 
-export function apiPost(endpoint, initialData = null) {
+export function apiPost(endpoint, initialData = null, hasAutoRefresh = true) {
   const [data, setData] = useState(initialData)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
   const request = async () => {
@@ -73,11 +73,12 @@ export function apiPost(endpoint, initialData = null) {
 
   const apiRefresh = () => request()
 
-  useEffect(()=>{
-    apiRefresh()
-  },[endpoint, initialData])
+  useEffect(() => {
+    if (hasAutoRefresh)
+      apiRefresh()
+  }, [endpoint, initialData])
 
-  return { data, loading, error, apiRefresh}
+  return { data, loading, error, apiRefresh }
 }
 
 export function apiDelete(endpoint, initialData = null) {
@@ -99,13 +100,13 @@ export function apiDelete(endpoint, initialData = null) {
 
   const apiRefresh = () => request()
 
-  useEffect(()=>{
+  useEffect(() => {
     apiRefresh()
-  },[endpoint, initialData])
+  }, [endpoint, initialData])
 
-  return { data, loading, error, apiRefresh}
+  return { data, loading, error, apiRefresh }
 }
 
-export function hasApiKey(){
+export function hasApiKey() {
   return localStorage.getItem('auth_token') && localStorage.getItem('auth_type')
 }
