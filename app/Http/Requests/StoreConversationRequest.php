@@ -11,7 +11,8 @@ class StoreConversationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('view', $this->conversation);
+        // return $this->user()->can('view', $this->conversation);
+        return true;
     }
 
     /**
@@ -24,6 +25,8 @@ class StoreConversationRequest extends FormRequest
         return [
             'type' => ['required', 'in:private,group'],
             'name' => ['required', 'string'],
+            'users' => ['required', 'array'],
+            'users.*' => ['required', 'integer', 'exists:users,id'],
         ];
     }
 }
