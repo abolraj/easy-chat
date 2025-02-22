@@ -32,10 +32,26 @@ export const ChatProvider = ({ children }) => {
         console.log('Message Sent:')
         setMessages((prevMessages)=>{
           if(!prevMessages.some((msg)=>msg.id === newMessage.id)){
-            const updatedMessages = [newMessage, ...prevMessages]
+            const updatedMessages = [...prevMessages, newMessage]
             return updatedMessages
           }
           return prevMessages
+        })
+      })
+      .listen('ConversationRead', participant => {
+        console.log('Conversation Readed:')
+        setMessages((prevMessages)=>{
+          console.log('messaages',prevMessages)
+          console.log('participant', participant)
+          return [...prevMessages].map(msg=>{
+            if(!msg?.read_at && participant.user_id ){
+              const is_participant_after_created = new Date(participant.last_read_at + ".000000Z") > new Date(msg.created_at)
+              if(is_participant_after_created)
+                msg.read_at = participant.last_read_at
+            }
+            console.log('message :', msg)
+            return msg
+          })
         })
       })
       .listen('MessageUpdated', message => 
