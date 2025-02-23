@@ -4,7 +4,7 @@ import { useChat } from '../../contexts/ChatContext'
 import FilePreview from './FilePreview'
 
 export default function MessageInput() {
-  const { sendMessage } = useChat()
+  const { sendMessage, sendMessageLoading } = useChat()
   const [input, setInput] = useState('')
   const [files, setFiles] = useState([])
   const [isTyping, setIsTyping] = useState(false)
@@ -69,9 +69,15 @@ export default function MessageInput() {
           <button type="button" className="btn max-h-full btn-ghost join-item">
             <FaceSmileIcon className="h-full" />
           </button>
-          <button type="submit" className="btn max-h-full btn-primary btn-ghost btn-circle join-item">
-            <PaperAirplaneIcon  className="h-full" />
-          </button>
+          <div className="h-full w-10 flex flex-col items-center justify-center">
+            {sendMessageLoading ?
+              <span className="loading loading-spinner text-accent h-full"></span>
+              :
+              <button type="submit" className="btn max-h-full btn-primary btn-ghost btn-circle join-item">
+                <PaperAirplaneIcon className="h-full" />
+              </button>
+            }
+          </div>
         </div>
       </form>
     </div>
