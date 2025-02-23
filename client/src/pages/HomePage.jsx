@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { hasApiKey } from '../hooks/useApi'
+import Footer from '../components/layout/Footer'
 
 export default function HomePage() {
   const { user, loading } = useAuth()
@@ -10,6 +11,8 @@ export default function HomePage() {
     <div className="hero min-h-screen bg-base-200">
       <div className="hero-content text-center">
         <div className="max-w-md">
+          <img src="/easy-chat.svg" alt="easy-chat" className="h-20 w-20 text-primary mx-auto" />
+
           {loading ?
             <span className="loading loading-infinity text-info w-20"></span>
             :
@@ -35,6 +38,8 @@ export default function HomePage() {
 
         </div>
       </div>
+
+      <Footer/>
     </div>
   )
 }
