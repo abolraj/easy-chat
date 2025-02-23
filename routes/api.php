@@ -33,6 +33,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     
     // Messages
     Route::prefix('conversations/{conversation}')->group(function () {
+        Route::delete('/messages/{message}', [MessageController::class, 'destroy']);
         Route::get('messages', [MessageController::class, 'index'])->name('conversations.messages.index');
         Route::post('messages', [MessageController::class, 'store'])->name('conversations.messages.store');
         Route::post('mark-read', [MessageController::class, 'markAsRead'])->name('conversations.messages.mark-as-read');

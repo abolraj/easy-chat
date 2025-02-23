@@ -9,6 +9,7 @@ use App\Events\MessageUpdated;
 use App\Events\MessageDeleted;
 use App\Http\Requests\StoreMessageRequest;
 use App\Http\Requests\UpdateMessageRequest;
+use Illuminate\Support\Facades\Gate;
 
 class MessageController extends Controller
 {
@@ -57,14 +58,14 @@ class MessageController extends Controller
         return response()->json($message);
     }
 
-    public function destroy(Message $message)
+    public function destroy(Conversation $conversation, Message $message)
     {
-        $this->authorize('delete', $message);
+        Gate::authorize('delete', $message);
 
         $message->delete();
-        broadcast(new MessageDeleted($message));
+        broadcast(new MessageDeleted($message, $conversation->id));
 
-        return response()->noContent();
+        return response()->json($message);
     }
 
     public function markAsRead(Conversation $conversation)
