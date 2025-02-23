@@ -9,9 +9,9 @@ export default function UserAvatar({ user, size = 'md' }) {
 
   return (
     <div className={`avatar placeholder ${sizes[size]}`}>
-      {user?.avatar ? (
+      {user?.name ? (
         <img 
-          src={user.avatar} 
+          src={"https://ui-avatars.com/api/?background=151515&color=fff&name=" + user.name} 
           alt={user.name} 
           className="rounded-full"
         />
