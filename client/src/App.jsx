@@ -33,7 +33,9 @@ export default function App() {
           </Route>
         }
 
-        <Route path="*" element={<Navigate to="/" />} />
+        { !loading &&
+          <Route path="*" element={<Navigate to="/" />} />
+        }
       </Routes>
     </BrowserRouter>
   )
