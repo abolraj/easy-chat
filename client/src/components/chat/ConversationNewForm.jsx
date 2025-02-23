@@ -58,8 +58,8 @@ export default function ConversationNewForm() {
 
   return (
     <div className="flex flex-col h-full">
-      <h2 className="text-3xl mb-2 border-b border-b-accent">Make new Conversation</h2>
-      <form onSubmit={handleSubmit} className="space-y-2 grow">
+      <h2 className="text-3xl mb-2 border-b border-b-base-content">Make new Conversation</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 grow">
         <label className="input validator w-full pl-1" htmlFor="type">
           <AtSymbolIcon height={"90%"} />
 
@@ -107,27 +107,33 @@ export default function ConversationNewForm() {
         <label className="input w-full">
           <span className="label !me-0">Participants </span>
           <SearchableSelect
+            disabled = {data.type == ''}
+            isMultiple={data.type == 'group'}
             inputName='users'
             options={users}
             onSearch={(q) => onSearchUser(q)}
-            onChange={(users) => setData({ ...data, users: [users.id] })}
+            onChange={(users) => setData({ ...data, users: users.map(user=>user.id)})}
             loading={loadingUsers}
             getShowInfo={(user) =>{ return {title: user.name, value: user.id} } }
             className="w-full"
           />
         </label>
 
+        <div className="grow">
+
+        </div>
+
         {errorMsg && <div className="text-error">{errorMsg}</div>}
 
         <button
           type="submit"
-          className="btn btn-primary w-full"
+          className="btn btn-primary w-full grow-0"
           disabled={loading}
         >
           {loading ?
             <spin class="loading loading-infinity loading-xl text-primary"></spin>
             :
-            'Make'
+            'Make Conversation'
           }
         </button>
       </form>
