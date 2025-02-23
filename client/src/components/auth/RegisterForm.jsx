@@ -29,7 +29,7 @@ export default function RegisterForm() {
 
   return (
     <>
-      <h2 className="-mt-17 mb-7 pt-2 text-3xl border-b border-b-accent">Register - Let's Collaborate</h2>
+      <h2 className="-mt-17 mb-7 pt-2 text-3xl ">Register - Let's Collaborate</h2>
       <form onSubmit={handleSubmit} className="space-y-2">
         <label className="input validator w-full pl-1" htmlFor="name">
           <UserIcon height={"90%"} />

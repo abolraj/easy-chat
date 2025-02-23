@@ -21,7 +21,7 @@ export default function LoginForm() {
 
   return (
     <>
-      <h2 className="-mt-17 mb-7 pt-2 text-3xl border-b border-b-accent">Login - Welcome back !</h2>
+      <h2 className="-mt-17 mb-7 pt-2 text-3xl ">Login - Welcome back !</h2>
       <form onSubmit={handleSubmit} className="space-y-2">
         <label className="input validator w-full pl-1" htmlFor="email">
           <AtSymbolIcon height={"90%"} />
