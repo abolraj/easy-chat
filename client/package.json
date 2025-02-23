@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
+    "jalali-moment": "^3.3.11",
     "laravel-echo": "^2.0.2",
     "pusher-js": "^8.4.0",
     "react": "^19.0.0",
