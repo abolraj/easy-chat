@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { apiGet } from '../hooks/useApi'
+import { apiGet, apiDelete } from '../hooks/useApi'
 import { echo } from '../api/websocket'
 import api from '../api/config'
 
@@ -13,6 +13,14 @@ export const ChatProvider = ({ children }) => {
   const [onlineUsers, setOnlineUsers] = useState([])
   
   const { data, apiRefresh } = apiGet(`/api/conversations/${conversationId ?? 1}`)
+
+  // Delete messages API
+  const [apiDeleteMessageId, setApiDeleteMessageId] = useState(null)
+  const {data: apiDeleteMsgData, loading: apiDeleteMsgLoading, apiRefresh: apiDeleteMsgRefresh} = apiDelete(`/api/conversations/${conversationId}/messages/${apiDeleteMessageId}`, null, true)
+
+  // Send Message
+  const [apiSendMsgLoading, setApiSendMsgLoading] = useState(false)
+
 
   // WebSocket Handlers
   useEffect(() => {
@@ -33,6 +41,12 @@ export const ChatProvider = ({ children }) => {
         setMessages((prevMessages)=>{
           if(!prevMessages.some((msg)=>msg.id === newMessage.id)){
             const updatedMessages = [...prevMessages, newMessage]
+            const scroller = document.querySelector('html');
+            if (scroller.offsetHeight - scroller.clientHeight <= scroller.scrollTop + 15) {
+              setTimeout(()=>{
+                scroller.scrollTop = scroller.offsetHeight - scroller.clientHeight + 90000
+              },0)
+            }
             return updatedMessages
           }
           return prevMessages
@@ -57,8 +71,10 @@ export const ChatProvider = ({ children }) => {
       .listen('MessageUpdated', message => 
         setMessages(prev => prev.map(m => m.id === message.id ? message : m))
       )
-      .listen('MessageDeleted', message => 
-        setMessages(prev => prev.filter(m => m.id !== message.id))
+      .listen('MessageDeleted', data => {
+        console.log('event: message deletion', data)
+        setMessages(prev => prev.filter(m => m.id !== data.message.id))
+      }
       )
       .listen('UserTyping', ({ userId, isTyping }) => {
         setTypingUsers(prev => isTyping 
@@ -75,7 +91,14 @@ export const ChatProvider = ({ children }) => {
     messages,
     typingUsers,
     onlineUsers,
+    deleteMessageLoading: apiDeleteMsgLoading,
+    deleteMessage: async (message_id) => {
+      console.log('delete message',message_id)
+      setApiDeleteMessageId(message_id)
+    },
+    sendMessageLoading: apiSendMsgLoading,
     sendMessage: async (content, files) => {
+      setApiSendMsgLoading(true)
       const formData = new FormData()
       formData.append('content', content)
       Array.from(files).forEach(file => formData.append('attachments[]', file))
@@ -87,6 +110,7 @@ export const ChatProvider = ({ children }) => {
         { headers: { 'Content-Type': 'multipart/form-data' } }
       )
       console.log('received the response:' + `/api/conversations/${conversationId}/messages`, response)
+      setApiSendMsgLoading(false)
       return response.data
     }
   }
