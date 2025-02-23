@@ -13,7 +13,7 @@ class ConversationController extends Controller
     public function index()
     {
         return auth()->user()->conversations()
-            ->with(['participants', 'messages'])
+            ->with(['participants', 'messages', 'messages.user'])
             ->latest()
             ->get();
     }
