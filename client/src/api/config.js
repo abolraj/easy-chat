@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://easy-change.localhost:8080/',
+  baseURL: import.meta.env.VITE_LARAVEL_BASE_URL,
   withCredentials: true,
 });
 
