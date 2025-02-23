@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import api from '../api/config'
 
-export function apiGet(endpoint, initialData = null) {
+export function apiGet(endpoint, initialData = null, hasAutoRefresh = true) {
   const [data, setData] = useState(initialData)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -18,17 +18,22 @@ export function apiGet(endpoint, initialData = null) {
     }
   }
 
-  const apiRefresh = () => request()
+  const apiRefresh = (_endpoint = null) => {
+    if (_endpoint)
+      endpoint = _endpoint
+    request()
+  }
 
   useEffect(() => {
-    apiRefresh()
+    if (hasAutoRefresh)
+      apiRefresh()
   }, [endpoint, initialData])
 
   // return { data, loading, error, apiRefresh, apiSucceed, apiFailed}
   return { data, loading, error, apiRefresh }
 }
 
-export function apiPut(endpoint, initialData = null) {
+export function apiPut(endpoint, initialData = null, hasAutoRefresh = true) {
   const [data, setData] = useState(initialData)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -45,10 +50,15 @@ export function apiPut(endpoint, initialData = null) {
     }
   }
 
-  const apiRefresh = () => request()
+  const apiRefresh = (_endpoint = null) => {
+    if (_endpoint)
+      endpoint = _endpoint
+    request()
+  }
 
   useEffect(() => {
-    apiRefresh()
+    if (hasAutoRefresh)
+      apiRefresh()
   }, [endpoint, initialData])
 
   return { data, loading, error, apiRefresh }
@@ -71,7 +81,11 @@ export function apiPost(endpoint, initialData = null, hasAutoRefresh = true) {
     }
   }
 
-  const apiRefresh = () => request()
+  const apiRefresh = (_endpoint = null) => {
+    if (_endpoint)
+      endpoint = _endpoint
+    request()
+  }
 
   useEffect(() => {
     if (hasAutoRefresh)
@@ -81,7 +95,7 @@ export function apiPost(endpoint, initialData = null, hasAutoRefresh = true) {
   return { data, loading, error, apiRefresh }
 }
 
-export function apiDelete(endpoint, initialData = null) {
+export function apiDelete(endpoint, initialData = null, hasAutoRefresh = true) {
   const [data, setData] = useState(initialData)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -98,10 +112,15 @@ export function apiDelete(endpoint, initialData = null) {
     }
   }
 
-  const apiRefresh = () => request()
+  const apiRefresh = (_endpoint = null) => {
+    if (_endpoint)
+      endpoint = _endpoint
+    request()
+  }
 
   useEffect(() => {
-    apiRefresh()
+    if (hasAutoRefresh)
+      apiRefresh()
   }, [endpoint, initialData])
 
   return { data, loading, error, apiRefresh }
