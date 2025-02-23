@@ -11,5 +11,10 @@ export default defineConfig({
   build: {
     outDir: '../public/dist',
     emptyOutDir: true,
+  },
+  esbuild: {
+    supported: {
+      'top-level-await': true //browsers can handle top-level-await features
+    },
   }
 })
